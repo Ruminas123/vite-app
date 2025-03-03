@@ -17,9 +17,9 @@ function App() {
       <h1>Vite + React</h1>
 
       <nav>
-        <Link to="/vite-react-router/">Home</Link>
+        <Link to="/vite-app/">Home</Link>
         {" | "}
-        <Link to="/vite-react-router/contact">Contact</Link>
+        <Link to="/vite-app/contact">Contact</Link>
       </nav>
 
       <Outlet />
