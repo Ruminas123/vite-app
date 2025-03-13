@@ -26,8 +26,8 @@ db.connect((err) => {
 });
 
 // Sample API Route
-app.get("/users", (req, res) => {
-  db.query("SELECT * FROM users", (err, result) => {
+app.get("/employees", (req, res) => {
+  db.query("SELECT * FROM employees", (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
