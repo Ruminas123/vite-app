@@ -7,23 +7,38 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Home } from "./pages/Home.tsx";
 import { Contact } from "./pages/Contact.tsx";
 import { Login } from "./pages/Login.tsx";
+import { Dashboard } from "./pages/Dashboard.tsx";
+import { CreateEmployee } from "./pages/CreateEmployee.tsx"
+import { ManageEmployee } from "./pages/ManageEmployee.tsx"
 
 const router = createBrowserRouter([
   {
-    path: "/vite-app/",
+    path: "/vite-app",
     element: <App />,
     children: [
       {
-        path: "/vite-app/",
+        path: "/vite-app",
         element: <Home />,
+      },
+      {
+        path: "/vite-app/login",
+        element: <Login />,
+      },
+      {
+        path: "/vite-app/dashboard",
+        element: <Dashboard />,
       },
       {
         path: "/vite-app/contact",
         element: <Contact />,
       },
       {
-        path: "/vite-app/login",
-        element: <Login />,
+        path: "/vite-app/create-employee",
+        element: <CreateEmployee />,
+      },
+      {
+        path: "/vite-app/manage-employee",
+        element: <ManageEmployee />,
       },
     ],
   },
