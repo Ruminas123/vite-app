@@ -1,8 +1,6 @@
-
 import "./App.css";
 import { Link, Outlet } from "react-router-dom";
-import React from "react";
-import Navbar from "./components/navbar";
+import Navbar from "./components/navbar.tsx";  // Explicitly add .tsx extension
 
 function App() {
   return (

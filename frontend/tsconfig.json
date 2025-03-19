@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "module": "commonjs",                    // Keep commonjs
-    "moduleResolution": "node",              // Change moduleResolution to node
+    "module": "Node16",                     // Change this to Node16
+    "moduleResolution": "node16",           // Keep this as node16
     "outDir": "./dist",
     "rootDir": "./src",
     "esModuleInterop": true,

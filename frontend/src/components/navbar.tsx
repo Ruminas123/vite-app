@@ -7,10 +7,10 @@ const Navbar = () => {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* Logo or Title */}
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-            <a href="https://react.dev" target="_blank">
+            <Link to="/vite-app/">
               <span style={{ color: '#408DFF', marginRight: '5px', fontWeight: 'bold'}}>AWAT</span> 
               <span style={{ color: '#FFFFFF', fontWeight: 'bold'}}>FORM</span>
-            </a>
+            </Link>
         </Box>
 
         {/* Navigation Buttons */}

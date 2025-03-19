@@ -1,76 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import './../css/createEmployee.scss';
 import {
   Box, Button, Typography, Modal, FormControl, RadioGroup,
-  FormControlLabel, Radio, TextField
+  FormControlLabel, Radio, TextField, Select, MenuItem, InputLabel
 } from "@mui/material";
 import Swal from 'sweetalert2';
 
-// Define the Employee type
 interface Employee {
-  id: number;
-  name: string;
-  surname: string;
-  employeeId: string;
-  password: string;
-  position: string;
+  employee_id: number;
+  employee_permission_id: number;
+  employee_department_id: number;
+  employee_position_id: number;
+  employee_fullname: string;
+  employee_username: string;
+  employee_password: string;
+  employee_status: number;
+  employee_date: string;
 }
 
 export function CreateEmployee() {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [positions, setPositions] = useState<{ position_id: number; position_name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newEmployee, setNewEmployee] = useState({
-    title: "",
-    name: "",
-    surname: "",
-    employeeId: "",
-    password: "",
-    position: "",
-  });
-
+  const [newEmployee, setNewEmployee] = useState({ title: "", name: "", surname: "", employeeId: "", password: "", position: "" });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitted, setIsSubmitted] = useState(false); // Track submission state
-
-  // Open & Close Modal
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setNewEmployee({ title: "", name: "", surname: "", employeeId: "", password: "", position: "" }); // Reset form
-    setErrors({});
-    setIsSubmitted(false); // Reset submission state
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const get_employee = () => {
+    axios
+      .get("http://localhost:5000/employees")
+      .then((response: AxiosResponse<Employee[]>) => { setEmployees(response.data) })
+      .catch((err: AxiosError) => { Swal.fire("Error", "Failed to fetch employees", "error") });
   };
-
-  // Validation function
-  const validateForm = () => {
-    let tempErrors: { [key: string]: string } = {};
-    if (!newEmployee.title) tempErrors.title = "โปรดเลือกคำนำหน้าชื่อ";
-    if (!newEmployee.name) tempErrors.name = "โปรดกรอกชื่อ";
-    if (!newEmployee.surname) tempErrors.surname = "โปรดกรอกนามสกุล";
-    if (!newEmployee.employeeId) tempErrors.employeeId = "โปรดกรอกรหัสพนักงาน";
-    if (!newEmployee.password) tempErrors.password = "โปรดกรอกรหัสผ่าน";
-    if (!newEmployee.position) tempErrors.position = "โปรดกรอกตำแหน่งงาน";
-
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0; // Returns true if no errors
+  const get_position = () => {
+    axios
+      .get("http://localhost:5000/positions")
+      .then((response: AxiosResponse<{ position_id: number; position_name: string }[]>) => { setPositions(response.data) })
+      .catch((err: AxiosError) => { Swal.fire("Error", "Failed to fetch positions", "error") });
   };
+  const del_position = (id: number) => {
+    axios
+      .delete(`http://localhost:5000/deleteEmployee/${id}`) // Call correct delete endpoint
+      .then(() => {
+        setEmployees((prevEmployees) => prevEmployees.filter((employee) => employee.employee_id !== id));
+        Swal.fire("ลบแล้ว!", "พนักงานถูกลบออกจากระบบ", "success");
+      })
+      .catch((err) => {
+        Swal.fire("Error", "Failed to delete employee", "error");
+      });
+  };
+  useEffect(() => {
+    get_employee(); get_position();
+  }, []);
 
-  // Handle adding a new employee
-  const handleAddEmployee = () => {
-    setIsSubmitted(true); // Mark the form as submitted
-
-    if (!validateForm()) return; // Stop if validation fails
-
-    setEmployees((prevEmployees) => [
-      ...prevEmployees,
-      {
-        id: prevEmployees.length + 1,
-        ...newEmployee,
-      },
-    ]);
-
-    Swal.fire("สำเร็จ!", "พนักงานถูกเพิ่มเรียบร้อยแล้ว", "success");
-    closeModal(); // Close modal after adding
+  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewEmployee({ ...newEmployee, [field]: e.target.value });
+    if (errors[field]) {
+      setErrors((prevErrors) => {
+        const newErrors = { ...prevErrors };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
 
   const handleDelete = (id: number) => {
@@ -82,34 +74,54 @@ export function CreateEmployee() {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "ลบ",
-      cancelButtonText: "ยกเลิก"
+      cancelButtonText: "ยกเลิก",
     }).then((result) => {
       if (result.isConfirmed) {
-        setEmployees((prevEmployees) => prevEmployees.filter((employee) => employee.id !== id));
-        Swal.fire("ลบแล้ว!", "พนักงานถูกลบออกจากระบบ", "success");
+        del_position(id);
       }
     });
   };
 
-  // Handle input change to clear errors when the user starts typing
-  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewEmployee({ ...newEmployee, [field]: e.target.value });
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
 
-    // Clear the error for the specific field if it has an error
-    if (errors[field]) {
-      setErrors((prevErrors) => {
-        const newErrors = { ...prevErrors };
-        delete newErrors[field];
-        return newErrors;
-      });
+    if (!newEmployee.title) newErrors.title = "กรุณาเลือกคำนำหน้า";
+    if (!newEmployee.name) newErrors.name = "กรุณากรอกชื่อ";
+    if (!newEmployee.surname) newErrors.surname = "กรุณากรอกนามสกุล";
+    if (!newEmployee.employeeId) newErrors.employeeId = "กรุณากรอกรหัสพนักงาน";
+    if (!newEmployee.position) newErrors.position = "กรุณากรอกตำแหน่ง";
+    if (!newEmployee.password) newErrors.password = "กรุณากรอกรหัสผ่าน";
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    setIsSubmitted(true);
+
+    if (validateForm()) {
+      const employeeData = {
+        fullname: `${newEmployee.title}${newEmployee.name} ${newEmployee.surname}`,
+        username: newEmployee.employeeId,
+        password: newEmployee.password,
+        position_id: newEmployee.position,
+      };
+      axios
+        .post("http://localhost:5000/createEmployee", employeeData)
+        .then((response: AxiosResponse) => {
+          setEmployees((prevEmployees) => [...prevEmployees, response.data.values]);
+          Swal.fire("สำเร็จ!", "พนักงานถูกเพิ่มเรียบร้อยแล้ว", "success");
+          setIsModalOpen(false);
+          setNewEmployee({ title: "", name: "", surname: "", employeeId: "", password: "", position: "" });
+        })
+        .catch((err: AxiosError) => { Swal.fire("Error", "Failed to add employee", "error"); });
     }
   };
 
   return (
     <div id="createEmployee" className="p-4 max-w-md mx-auto">
-      <button onClick={openModal} className="mb-3 bg-green-500 text-white px-4 py-2 rounded">
-        เพิ่มพนักงาน
-      </button>
+      <button onClick={() => setIsModalOpen(true)} className="mb-3 bg-green-500 text-white px-4 py-2 rounded">เพิ่มพนักงาน</button>
 
       <input
         type="text"
@@ -119,22 +131,18 @@ export function CreateEmployee() {
         className="w-full p-2 border rounded mb-3"
       />
 
-      {/* Employee List */}
       <ul className="space-y-2">
-        {employees.filter(emp => emp.name.includes(searchQuery)).map((employee) => (
-          <li key={employee.id} className="p-2 bg-gray-100 rounded flex justify-between items-center">
+        {employees.filter((emp) => emp.employee_fullname && emp.employee_fullname.toLowerCase().includes(searchQuery.toLowerCase())).map((employee) => (
+          <li key={employee.employee_id} className="p-2 bg-gray-100 rounded flex justify-between items-center">
             <span>
-              <strong>{employee.name}</strong> - {employee.position}
+              <strong>{employee.employee_fullname}</strong> - {employee.employee_username}
             </span>
-            <button onClick={() => handleDelete(employee.id)} className="bg-red-500 text-white px-2 py-1 rounded">
-              Delete
-            </button>
+            <button onClick={() => handleDelete(employee.employee_id)} className="bg-red-500 text-white px-2 py-1 rounded"> Delete</button>
           </li>
         ))}
       </ul>
 
-      {/* Add Employee Modal */}
-      <Modal id="modal-create-employee" open={isModalOpen} onClose={closeModal} aria-labelledby="modal-title">
+      <Modal id="modal-create-employee" open={isModalOpen} onClose={() => setIsModalOpen(false)} aria-labelledby="modal-title">
         <Box
           sx={{
             position: "absolute",
@@ -161,8 +169,6 @@ export function CreateEmployee() {
               value={newEmployee.title}
               onChange={(e) => {
                 setNewEmployee({ ...newEmployee, title: e.target.value });
-
-                // Clear the error for the 'title' field when the user selects an option
                 if (errors.title) {
                   setErrors((prevErrors) => {
                     const newErrors = { ...prevErrors };
@@ -172,18 +178,10 @@ export function CreateEmployee() {
                 }
               }}
             >
-              <FormControlLabel
-                value="mr"
-                control={<Radio sx={{ color: isSubmitted && errors.title ? "red" : "inherit" }} />}
-                label={<Typography sx={{ color: isSubmitted && errors.title ? "red" : "inherit" }}>นาย</Typography>}
-              />
-              <FormControlLabel
-                value="mrs"
-                control={<Radio sx={{ color: isSubmitted && errors.title ? "red" : "inherit" }} />}
-                label={<Typography sx={{ color: isSubmitted && errors.title ? "red" : "inherit" }}>นางสาว</Typography>}
-              />
+              <FormControlLabel value="นาย" control={<Radio />} label="นาย" />
+              <FormControlLabel value="นางสาว" control={<Radio />} label="นางสาว" />
             </RadioGroup>
-            <Box className="custom-box" >{isSubmitted && errors.title && <Typography color="error">{errors.title}</Typography>}</Box>
+            {isSubmitted && errors.title && <Typography color="error">{errors.title}</Typography>}
           </FormControl>
 
           <Box display="flex" justifyContent="center" gap={2} sx={{ mt: 2 }}>
@@ -195,7 +193,6 @@ export function CreateEmployee() {
               error={isSubmitted && !!errors.name}
               helperText={isSubmitted && errors.name}
             />
-
             <TextField
               label="นามสกุล"
               value={newEmployee.surname}
@@ -210,33 +207,42 @@ export function CreateEmployee() {
             label="รหัสพนักงาน"
             value={newEmployee.employeeId}
             onChange={handleInputChange("employeeId")}
-            fullWidth sx={{ mt: 2 }}
+            fullWidth
+            sx={{ mt: 2 }}
             error={isSubmitted && !!errors.employeeId}
             helperText={isSubmitted && errors.employeeId}
           />
 
-          <TextField
-            label="ตำแหน่ง"
-            value={newEmployee.position}
-            onChange={handleInputChange("position")}
-            fullWidth sx={{ mt: 2 }}
-            error={isSubmitted && !!errors.position}
-            helperText={isSubmitted && errors.position}
-          />
+          <FormControl fullWidth sx={{ mt: 2 }} error={isSubmitted && !!errors.position}>
+            <InputLabel>ตำแหน่ง</InputLabel>
+            <Select
+              value={newEmployee.position}
+              onChange={(e) => setNewEmployee({ ...newEmployee, position: e.target.value })}
+              label="ตำแหน่ง"
+            >
+              {positions.map((position) => (
+                <MenuItem key={position.position_id} value={position.position_id}>
+                  {position.position_name}
+                </MenuItem>
+              ))}
+            </Select>
+            {isSubmitted && errors.position && <Typography color="error">{errors.position}</Typography>}
+          </FormControl>
 
           <TextField
             label="รหัสผ่าน"
             type="password"
             value={newEmployee.password}
             onChange={handleInputChange("password")}
-            fullWidth sx={{ mt: 2 }}
+            fullWidth
+            sx={{ mt: 2 }}
             error={isSubmitted && !!errors.password}
             helperText={isSubmitted && errors.password}
           />
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 3 }}>
-            <Button variant="contained" color="success" onClick={handleAddEmployee}>เพิ่มพนักงาน</Button>
-            <Button onClick={closeModal} variant="contained" color="warning">ยกเลิก</Button>
+            <Button onClick={handleSubmit} variant="contained" color="success">เพิ่มพนักงาน</Button>
+            <Button onClick={() => setIsModalOpen(false)} variant="contained" color="warning">ยกเลิก</Button>
           </Box>
         </Box>
       </Modal>

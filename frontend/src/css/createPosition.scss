@@ -1,0 +1,171 @@
+#createPosition.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f8fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#createPosition,
+#modal-create-position {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+#modal-create-position h6 {
+    color: #000000;
+    text-align: center;
+}
+
+#createPosition h2 {
+    font-size: 2rem;
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+#createPosition input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+#createPosition input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+#createPosition button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+}
+
+#createPosition button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+#createPosition button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+#createPosition .card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+#createPosition .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+#createPosition .card-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+#createPosition .card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+#createPosition ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#createPosition ul li {
+    font-size: 1rem;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#createPosition ul li button {
+    background-color: #e74c3c;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#createPosition ul li button:hover {
+    background-color: #c0392b;
+}
+
+#createPosition button.edit-btn {
+    background-color: #2ecc71;
+    margin-right: 5px;
+}
+
+#createPosition button.edit-btn:hover {
+    background-color: #27ae60;
+}
+
+#createPosition button.delete-btn {
+    background-color: #e74c3c;
+}
+
+#createPosition button.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+@media (max-width: 768px) {
+    #createPosition .container {
+        padding: 10px;
+    }
+
+    #createPosition .card {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    #createPosition h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #createPosition h2 {
+        font-size: 1.2rem;
+    }
+
+    #createPosition .card {
+        width: 100%;
+        padding: 15px;
+    }
+
+    #createPosition input,
+    #createPosition button {
+        font-size: 0.9rem;
+    }
+}

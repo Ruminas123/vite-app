@@ -9,6 +9,7 @@ import { Contact } from "./pages/Contact.tsx";
 import { Login } from "./pages/Login.tsx";
 import { Dashboard } from "./pages/Dashboard.tsx";
 import { CreateEmployee } from "./pages/CreateEmployee.tsx"
+import { CreatePosition } from "./pages/CreatePosition.tsx"
 import { ManageEmployee } from "./pages/ManageEmployee.tsx"
 
 const router = createBrowserRouter([
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/vite-app/create-employee",
         element: <CreateEmployee />,
+      },
+      {
+        path: "/vite-app/create-position",
+        element: <CreatePosition />,
       },
       {
         path: "/vite-app/manage-employee",
