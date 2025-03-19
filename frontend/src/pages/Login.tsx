@@ -11,13 +11,31 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export function Login() {
   const [username, setText] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = () => { };
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/login', { username, password });
+      if (response.data.success) {
+        navigate('/vite-app/');
+        Swal.fire('สำเร็จ!', 'เข้าสู่ระบบสำเร็จแล้ว', 'success');
+      } else {
+        setError('Invalid username or password');
+        Swal.fire('ผิดพลาด!', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+      }
+    } catch (error) {
+      setError('An error occurred while logging in');
+      Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error');
+    }
+  };
 
   return (
     <>

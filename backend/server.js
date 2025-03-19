@@ -9,7 +9,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// MySQL Connection
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -25,7 +24,21 @@ db.connect((err) => {
   }
 });
 
-// Get all employees
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  db.query("SELECT * FROM employees WHERE employee_username = ? AND employee_password = ?", 
+    [username, password], (err, result) => {
+      if(err) { return res.status(500).json({ error: err.message })}
+      if(result.length > 0) { 
+        const user = result[0];
+        delete user.employee_password;
+        res.json({ success: true, message: "Login successful", user })
+      } 
+      else {res.json({ success: false, message: "Invalid username or password" })}
+    }
+  );
+});
+
 app.get("/employees", (req, res) => {
   db.query("SELECT * FROM employees", (err, result) => {
     if (err) {
@@ -34,6 +47,7 @@ app.get("/employees", (req, res) => {
     res.json(result);
   });
 });
+
 app.get("/positions", (req, res) => {
   db.query("SELECT * FROM positions", (err, result) => {
     if (err) {
@@ -43,7 +57,6 @@ app.get("/positions", (req, res) => {
   });
 });
 
-// Add a new employee (POST /employees)
 app.post("/createEmployee", (req, res) => {
   console.log(req.body)
   const { fullname, username, password, position_id } = req.body;
@@ -92,7 +105,6 @@ app.post("/createPosition", (req, res) => {
     return res.status(400).json({ error: "Position name is required" });
   }
 
-  // Check for duplicate position name
   db.query("SELECT * FROM positions WHERE position_name = ?", [name], (err, results) => {
     if (err) { return res.status(500).send(err); }
 
@@ -100,7 +112,6 @@ app.post("/createPosition", (req, res) => {
       return res.status(400).json({ error: "Position name already exists" });
     }
 
-    // Insert new position if not duplicate
     db.query("INSERT INTO positions (position_name, position_status) VALUES (?, ?)",
       [name, status], (err, result) => {
         if (err) {
