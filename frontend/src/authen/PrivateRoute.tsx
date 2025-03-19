@@ -1,20 +1,16 @@
-// PrivateRoute.tsx
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../authen/AuthContext.tsx'; // สมมุติว่าคุณใช้ Context ในการจัดการสถานะการเข้าสู่ระบบ
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../authen/AuthContext.tsx";
 
 interface PrivateRouteProps {
-  element: React.ReactNode;
+  children: React.ReactNode;
+  redirectPath: string;
 }
 
-const PrivateRoute = ({ element }: PrivateRouteProps) => {
-  const { isAuthenticated } = useAuth(); // ตรวจสอบสถานะการเข้าสู่ระบบจาก Context
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />; // หากยังไม่ได้เข้าสู่ระบบ เปลี่ยนเส้นทางไปที่ /login
-  }
-
-  return <>{element}</>; // หากเข้าสู่ระบบแล้ว ให้แสดงหน้า (element) ที่ต้องการ
+const PrivateRoute = ({ children, redirectPath }: PrivateRouteProps) => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {return <Navigate to={redirectPath} />}
+  return <>{children}</>;
 };
 
 export default PrivateRoute;

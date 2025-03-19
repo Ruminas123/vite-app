@@ -8,9 +8,10 @@ import { Home } from "./pages/Home.tsx";
 import { Contact } from "./pages/Contact.tsx";
 import { Login } from "./pages/Login.tsx";
 import { Dashboard } from "./pages/Dashboard.tsx";
-import { CreateEmployee } from "./pages/CreateEmployee.tsx"
-import { CreatePosition } from "./pages/CreatePosition.tsx"
-import { ManageEmployee } from "./pages/ManageEmployee.tsx"
+import { CreateEmployee } from "./pages/CreateEmployee.tsx";
+import { CreatePosition } from "./pages/CreatePosition.tsx";
+import { ManageEmployee } from "./pages/ManageEmployee.tsx";
+import PrivateRoute from "./authen/PrivateRoute.tsx"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/vite-app",
-        element: <Home />,
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <Home />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/vite-app/login",
@@ -27,23 +32,43 @@ const router = createBrowserRouter([
       },
       {
         path: "/vite-app/dashboard",
-        element: <Dashboard />,
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <Dashboard />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/vite-app/contact",
-        element: <Contact />,
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <Contact />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/vite-app/create-employee",
-        element: <CreateEmployee />,
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <CreateEmployee />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/vite-app/create-position",
-        element: <CreatePosition />,
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <CreatePosition />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/vite-app/manage-employee",
-        element: <ManageEmployee />,
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <ManageEmployee />
+          </PrivateRoute>
+        ),
       },
     ],
   },
