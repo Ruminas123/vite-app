@@ -121,15 +121,18 @@ export function CreateEmployee() {
 
   return (
     <div id="createEmployee" className="p-4 max-w-md mx-auto">
-      <button onClick={() => setIsModalOpen(true)} className="mb-3 bg-green-500 text-white px-4 py-2 rounded">เพิ่มพนักงาน</button>
+      <div style={{ display: "flex" }}>
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-2 border rounded mb-3"
+        />
+        <button onClick={() => setIsModalOpen(true)} style={{ width: "9rem", height: "fit-content" }}>เพิ่มพนักงาน</button>
+      </div>
 
-      <input
-        type="text"
-        placeholder="Search by name..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full p-2 border rounded mb-3"
-      />
+
 
       <ul className="space-y-2">
         {employees.filter((emp) => emp.employee_fullname && emp.employee_fullname.toLowerCase().includes(searchQuery.toLowerCase())).map((employee) => (

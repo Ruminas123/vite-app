@@ -1,4 +1,8 @@
+#createPosition{
+    width: 100%;
+}
 #createPosition.container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -15,6 +19,10 @@
 #modal-create-position h6 {
     color: #000000;
     text-align: center;
+}
+
+#createPosition .edit{
+    margin: 0 0.5110rem;
 }
 
 #createPosition h2 {

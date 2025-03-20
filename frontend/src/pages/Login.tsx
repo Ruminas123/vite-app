@@ -19,8 +19,10 @@ export function Login() {
         username,
         password,
       });
+  
       if (response.data.success) {
-        login(); // Set user as logged in
+        const userData = response.data.user;
+        login(userData); // ส่งข้อมูล user เข้า Context
         navigate("/vite-app/");
         Swal.fire("สำเร็จ!", "เข้าสู่ระบบสำเร็จแล้ว", "success");
       } else {

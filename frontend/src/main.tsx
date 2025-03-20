@@ -1,8 +1,7 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
+import React from 'react';  // เพิ่มการ import React
 import App from "./App.tsx";
 import "./index.css";
-
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Home } from "./pages/Home.tsx";
 import { Contact } from "./pages/Contact.tsx";
@@ -65,11 +64,12 @@ const router = createBrowserRouter([
       {
         path: "/vite-app/manage-employee",
         element: (
-          <PrivateRoute redirectPath="/vite-app/login">
+          <PrivateRoute redirectPath="/vite-app/login" requiredStatus={2}>
             <ManageEmployee />
           </PrivateRoute>
         ),
       },
+
     ],
   },
 ]);

@@ -78,26 +78,26 @@ export function CreatePosition() {
   // Validate form
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-  
+
     if (!newPosition.name.trim()) {
       newErrors.name = "กรุณากรอกชื่อตำแหน่ง";
     }
     const isSameAsCurrent = positions.some(
       (position) => position.position_id === newPosition.id && position.position_name.toLowerCase() === newPosition.name.toLowerCase()
     );
-  
+
     if (isSameAsCurrent) {
       newErrors.name = "ไม่สามารถใช้ชื่อเดิมได้ กรุณาเปลี่ยนชื่อ";
     }
-  
+
     const isDuplicate = positions.some(
       (position) => position.position_name.toLowerCase() === newPosition.name.toLowerCase() && position.position_id !== newPosition.id
     );
-  
+
     if (isDuplicate) {
       newErrors.name = "ชื่อตำแหน่งนี้มีอยู่แล้ว";
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -153,25 +153,23 @@ export function CreatePosition() {
   };
 
   return (
-    <div id="createPosition" className="p-4 max-w-md mx-auto">
-      <button
-        onClick={() => {
-          setNewPosition({ name: "", id: null });
-          setErrors({});
-          setIsSubmitted(false);
-          setIsModalOpen(true);
-        }}
-        className="mb-3 bg-green-500 text-white px-4 py-2 rounded"
-      >
-        เพิ่มตำแหน่ง
-      </button>
-      <input
-        type="text"
-        placeholder="Search by name..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full p-2 border rounded mb-3"
-      />
+    <div id="createPosition" className="p-4 w-full mx-auto">
+      <div style={{ display: "flex" }}>
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-2 border rounded mb-3"
+        />
+        <button
+          onClick={() => {
+            setNewPosition({ name: "", id: null });
+            setErrors({});
+            setIsSubmitted(false);
+            setIsModalOpen(true);
+          }} style={{ width: "9rem", height: "fit-content" }}>เพิ่มตำแหน่ง</button>
+      </div>
 
       <ul className="space-y-2">
         {positions
@@ -181,12 +179,10 @@ export function CreatePosition() {
               <span>
                 <strong>{position.position_name}</strong>
               </span>
-              <button onClick={() => openEditModal(position)} className="bg-blue-500 text-white px-2 py-1 rounded">
-                Edit
-              </button>
-              <button onClick={() => handleDelete(position.position_id)} className="bg-red-500 text-white px-2 py-1 rounded">
-                Delete
-              </button>
+              <div>
+                <button onClick={() => openEditModal(position)} className="edit">Edit</button>
+                <button onClick={() => handleDelete(position.position_id)} className="delete">Delete</button>
+              </div>
             </li>
           ))}
       </ul>
