@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import "./../css/createPosition.scss";
-import {
-  Box, Button, Typography, Modal, TextField
-} from "@mui/material";
+import {Box, Button, Typography, Modal, TextField} from "@mui/material";
 import Swal from "sweetalert2";
 
 interface Position {

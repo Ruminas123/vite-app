@@ -1,7 +1,8 @@
 import "./App.css";
-import { Link, Outlet } from "react-router-dom";
-import Navbar from "./components/navbar.tsx";  // Explicitly add .tsx extension
-import { AuthProvider } from "./authen/AuthContext.tsx"; // Import the AuthProvider
+import { Outlet } from "react-router-dom";
+import Navbar from "./components/navbar.tsx";  // Without .tsx extension
+import { AuthProvider } from "./authen/AuthContext.tsx"; // Without .tsx extension
+import 'primeicons/primeicons.css';
 
 function App() {
   return (

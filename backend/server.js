@@ -26,15 +26,15 @@ db.connect((err) => {
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-  db.query("SELECT * FROM employees WHERE employee_username = ? AND employee_password = ?", 
+  db.query("SELECT * FROM employees WHERE employee_username = ? AND employee_password = ?",
     [username, password], (err, result) => {
-      if(err) { return res.status(500).json({ error: err.message })}
-      if(result.length > 0) { 
+      if (err) { return res.status(500).json({ error: err.message }) }
+      if (result.length > 0) {
         const user = result[0];
         delete user.employee_password;
         res.json({ success: true, message: "Login successful", user })
-      } 
-      else {res.json({ success: false, message: "Invalid username or password" })}
+      }
+      else { res.json({ success: false, message: "Invalid username or password" }) }
     }
   );
 });
@@ -150,15 +150,40 @@ app.delete("/deletePosition/:id", (req, res) => {
 app.put("/editPosition/:id", (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
-  if (!name) {return res.status(400).json({ message: "Position name is required" })}
+  if (!name) { return res.status(400).json({ message: "Position name is required" }) }
   db.query("UPDATE positions SET position_name = ? WHERE position_id = ?", [name, id], (err, result) => {
-      if (err) {return res.status(500).json({ error: err.message })}
-      if (result.affectedRows === 0) {return res.status(404).json({ message: "Position not found" })}
-      res.json({position_id: id, position_name: name, position_status: true});
+    if (err) { return res.status(500).json({ error: err.message }) }
+    if (result.affectedRows === 0) { return res.status(404).json({ message: "Position not found" }) }
+    res.json({ position_id: id, position_name: name, position_status: true });
   });
 });
+
+app.post("/updatekeyfromID", async (req, res) => {
+  const updatedEmployees = req.body;
+  function loopEmployees(employees) {
+    employees.forEach(employee => {
+      const updatedKey = employee.key;  // Use the 'key' provided in the request body
+      const query = 'UPDATE employees SET employee_key = ? WHERE employee_id = ?';
+      db.query(query, [updatedKey, employee.id], (err, results) => {
+        if (err) {return err;}
+      });
+      if (employee.children && employee.children.length > 0) {loopEmployees(employee.children)}
+    });
+  }
+
+  try {
+    loopEmployees(updatedEmployees);
+    res.status(200).send({ message: "Keys updated successfully!" });
+  } catch (error) {
+    console.error("Error during update:", error);
+    res.status(500).send({ message: "Error updating keys" });
+  }
+});
+
 
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
+
+

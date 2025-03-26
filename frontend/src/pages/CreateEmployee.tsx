@@ -24,7 +24,7 @@ export function CreateEmployee() {
   const [positions, setPositions] = useState<{ position_id: number; position_name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newEmployee, setNewEmployee] = useState({ title: "", name: "", surname: "", employeeId: "", password: "", position: "" });
+  const [newEmployee, setNewEmployee] = useState({ title: "", name: "", surname: "", employeeId: "", password: "", position: "", supervisorId: "", });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const get_employee = () => {
@@ -89,6 +89,7 @@ export function CreateEmployee() {
     if (!newEmployee.name) newErrors.name = "กรุณากรอกชื่อ";
     if (!newEmployee.surname) newErrors.surname = "กรุณากรอกนามสกุล";
     if (!newEmployee.employeeId) newErrors.employeeId = "กรุณากรอกรหัสพนักงาน";
+    if (!newEmployee.supervisorId) newErrors.supervisorId = "กรุณาเลือกหัวหน้า";  // ตรวจสอบ supervisorId
     if (!newEmployee.position) newErrors.position = "กรุณากรอกตำแหน่ง";
     if (!newEmployee.password) newErrors.password = "กรุณากรอกรหัสผ่าน";
 
@@ -113,7 +114,7 @@ export function CreateEmployee() {
           setEmployees((prevEmployees) => [...prevEmployees, response.data.values]);
           Swal.fire("สำเร็จ!", "พนักงานถูกเพิ่มเรียบร้อยแล้ว", "success");
           setIsModalOpen(false);
-          setNewEmployee({ title: "", name: "", surname: "", employeeId: "", password: "", position: "" });
+          setNewEmployee({ title: "", name: "", surname: "", employeeId: "", password: "", position: "", supervisorId: ""});
         })
         .catch((err: AxiosError) => { Swal.fire("Error", "Failed to add employee", "error"); });
     }
@@ -215,7 +216,21 @@ export function CreateEmployee() {
             error={isSubmitted && !!errors.employeeId}
             helperText={isSubmitted && errors.employeeId}
           />
-
+          <FormControl fullWidth sx={{ mt: 2 }} error={isSubmitted && !!errors.supervisorId}>
+            <InputLabel>หัวหน้า</InputLabel>
+            <Select
+              value={newEmployee.supervisorId}  // ใช้ supervisorId แทน employee
+              onChange={(e) => setNewEmployee({ ...newEmployee, supervisorId: e.target.value })}  // ตั้งค่า supervisorId
+              label="หัวหน้า"
+            >
+              {employees.map((employee) => (
+                <MenuItem key={employee.employee_id} value={employee.employee_id}>
+                  {employee.employee_fullname}  {/* ใช้ employee_fullname แทน employee_name */}
+                </MenuItem>
+              ))}
+            </Select>
+            {isSubmitted && errors.supervisorId && <Typography color="error">{errors.supervisorId}</Typography>}
+          </FormControl>
           <FormControl fullWidth sx={{ mt: 2 }} error={isSubmitted && !!errors.position}>
             <InputLabel>ตำแหน่ง</InputLabel>
             <Select
