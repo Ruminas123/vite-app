@@ -55,6 +55,10 @@
     margin-top: 10px;
 }
 
+#createEmployee button:focus, #createEmployee button:focus-visible{
+    outline: unset;
+}
+
 #createEmployee button:hover {
     background-color: #2980b9;
     transform: scale(1.05);
@@ -65,7 +69,6 @@
     cursor: not-allowed;
 }
 
-// Card Layout
 #createEmployee .card {
     background-color: #fff;
     border-radius: 10px;
@@ -101,21 +104,6 @@
     margin-bottom: 10px;
 }
 
-// Employee List Styling
-#createEmployee ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-#createEmployee ul li {
-    font-size: 1rem;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 #createEmployee ul li button {
     background-color: #e74c3c;
     padding: 5px 10px;
@@ -124,13 +112,13 @@
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin: 0 0.5rem 0 0;
 }
 
 #createEmployee ul li button:hover {
     background-color: #c0392b;
 }
 
-// Edit and Delete buttons (for individual employees)
 #createEmployee button.edit-btn {
     background-color: #2ecc71;
     margin-right: 5px;
@@ -147,6 +135,92 @@
 #createEmployee button.delete-btn:hover {
     background-color: #c0392b;
 }
+
+
+#createEmployee{
+    color: #6b7280;
+}
+
+#createEmployee #Tree li{
+    list-style: none;
+}
+
+#createEmployee #Tree .p-tree .p-treenode-children {
+    padding: 0 0 0 1rem;
+}
+
+#createEmployee #Tree .p-treenode-leaf > .p-treenode-content .p-tree-toggler {
+    visibility: hidden;
+    width: 1rem!important;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode:focus > .p-treenode-content {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 0.15rem #c7d2fe;
+}
+
+#createEmployee #Tree .p-tree .p-treenode-droppoint.p-treenode-droppoint-active {
+    background: #8ba7ff ;
+}
+
+#createEmployee #Tree .p-tree .p-treenode-droppoint {
+    height: 0.3rem;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content {
+    border-radius: 6px;
+    transition: box-shadow 0.2s;
+    padding: 0.5rem 0;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    display: flex;
+    align-items: baseline;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-dragover{
+    background: #e9e9e9;
+    color: #4b5563;
+}
+
+#createEmployee #Tree .p-tree-toggler {
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:focus-visible {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem #a5f3fc;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler {
+    margin: 0 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    color: #6b7280;
+    border: 0 none;
+    background: transparent;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:hover {
+    color: #374151;
+    border-color: transparent;
+    background: #e9e9e9;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content .p-treenode-icon {
+    margin-right: 0.5rem;
+    color: #6b7280;
+}
+
 
 // Responsive Design
 @media (max-width: 768px) {

@@ -9,7 +9,6 @@ import { Login } from "./pages/Login.tsx";
 import { Dashboard } from "./pages/Dashboard.tsx";
 import { CreateEmployee } from "./pages/CreateEmployee.tsx";
 import { CreatePosition } from "./pages/CreatePosition.tsx";
-import { ManageEmployee } from "./pages/ManageEmployee.tsx";
 import PrivateRoute from "./authen/PrivateRoute.tsx"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -61,15 +60,6 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-      {
-        path: "/vite-app/manage-employee",
-        element: (
-          <PrivateRoute redirectPath="/vite-app/login" requiredStatus={2}>
-            <ManageEmployee />
-          </PrivateRoute>
-        ),
-      },
-
     ],
   },
 ]);

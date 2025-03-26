@@ -21,10 +21,6 @@ export function Home() {
                         <img src={image1} alt="Card Image 1" className="card-image" />
                         <p className="card-title">CREATE POSITION</p>
                     </Link>
-                    <Link to="/vite-app/manage-employee" className="card">
-                        <img src={image2} alt="Card Image 2" className="card-image" />
-                        <p className="card-title">MANAGE EMPLOYEE</p>
-                    </Link>
                     <Link to="/vite-app/dashboard" className="card">
                         <img src={image3} alt="Card Image 3" className="card-image" />
                         <p className="card-title">DASHBOARD</p>

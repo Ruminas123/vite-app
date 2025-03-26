@@ -101,25 +101,25 @@ app.post("/createEmployee", (req, res) => {
 app.post("/createPosition", (req, res) => {
   const { name, status = true } = req.body;
 
-  if (!name) {
-    return res.status(400).json({ error: "Position name is required" });
-  }
+  // if (!name) {
+  //   return res.status(400).json({ error: "Position name is required" });
+  // }
 
-  db.query("SELECT * FROM positions WHERE position_name = ?", [name], (err, results) => {
-    if (err) { return res.status(500).send(err); }
+  // db.query("SELECT * FROM positions WHERE position_name = ?", [name], (err, results) => {
+  //   if (err) { return res.status(500).send(err); }
 
-    if (results.length > 0) {
-      return res.status(400).json({ error: "Position name already exists" });
-    }
+  //   if (results.length > 0) {
+  //     return res.status(400).json({ error: "Position name already exists" });
+  //   }
 
-    db.query("INSERT INTO positions (position_name, position_status) VALUES (?, ?)",
-      [name, status], (err, result) => {
-        if (err) {
-          return res.status(500).send(err);
-        }
-        res.json({ position_id: result.insertId, position_name: name, position_status: status });
-      });
-  });
+  //   db.query("INSERT INTO positions (position_name, position_status) VALUES (?, ?)",
+  //     [name, status], (err, result) => {
+  //       if (err) {
+  //         return res.status(500).send(err);
+  //       }
+  //       res.json({ position_id: result.insertId, position_name: name, position_status: status });
+  //     });
+  // });
 });
 
 app.delete("/deleteEmployee/:id", (req, res) => {

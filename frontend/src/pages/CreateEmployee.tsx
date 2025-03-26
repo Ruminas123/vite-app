@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import './../css/createEmployee.scss';
-import {
-  Box, Button, Typography, Modal, FormControl, RadioGroup,
-  FormControlLabel, Radio, TextField, Select, MenuItem, InputLabel
-} from "@mui/material";
+import { Box, Button, Typography, Modal, FormControl, RadioGroup, FormControlLabel, Radio, TextField, Select, MenuItem, InputLabel, Autocomplete } from "@mui/material";
+import { Tree, TreeDragDropEvent } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
+import { NodeService } from '../service/NodeService.tsx';
+
 import Swal from 'sweetalert2';
 
 interface Employee {
@@ -12,6 +13,7 @@ interface Employee {
   employee_permission_id: number;
   employee_department_id: number;
   employee_position_id: number;
+  employee_key: string;
   employee_fullname: string;
   employee_username: string;
   employee_password: string;
@@ -27,11 +29,23 @@ export function CreateEmployee() {
   const [newEmployee, setNewEmployee] = useState({ title: "", name: "", surname: "", employeeId: "", password: "", position: "", supervisorId: "", });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [expandedKeys, setExpandedKeys] = useState<any>(null);
+  const treeRef = useRef<any>(null);
+
   const get_employee = () => {
-    axios
-      .get("http://localhost:5000/employees")
-      .then((response: AxiosResponse<Employee[]>) => { setEmployees(response.data) })
-      .catch((err: AxiosError) => { Swal.fire("Error", "Failed to fetch employees", "error") });
+    axios.get("http://localhost:5000/employees")
+      .then((response: AxiosResponse<Employee[]>) => {
+        setEmployees(response.data);
+        NodeService.getTreeNodes(response.data).then((data) => {
+          setNodes(data);
+          expandAllNodes(data);
+        });
+      })
+      .catch((err: AxiosError) => {
+        console.error('Error fetching employees:', err);
+      });
   };
   const get_position = () => {
     axios
@@ -51,7 +65,8 @@ export function CreateEmployee() {
       });
   };
   useEffect(() => {
-    get_employee(); get_position();
+    get_employee();
+    get_position();
   }, []);
 
   const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +100,7 @@ export function CreateEmployee() {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!newEmployee.title) newErrors.title = "กรุณาเลือกคำนำหน้า";
+    // if (!newEmployee.title) newErrors.title = "กรุณาเลือกคำนำหน้า";
     if (!newEmployee.name) newErrors.name = "กรุณากรอกชื่อ";
     if (!newEmployee.surname) newErrors.surname = "กรุณากรอกนามสกุล";
     if (!newEmployee.employeeId) newErrors.employeeId = "กรุณากรอกรหัสพนักงาน";
@@ -103,8 +118,9 @@ export function CreateEmployee() {
 
     if (validateForm()) {
       const employeeData = {
-        fullname: `${newEmployee.title}${newEmployee.name} ${newEmployee.surname}`,
+        fullname: `คุณ${newEmployee.name} ${newEmployee.surname}`,
         username: newEmployee.employeeId,
+        key: newEmployee.supervisorId,
         password: newEmployee.password,
         position_id: newEmployee.position,
       };
@@ -114,12 +130,61 @@ export function CreateEmployee() {
           setEmployees((prevEmployees) => [...prevEmployees, response.data.values]);
           Swal.fire("สำเร็จ!", "พนักงานถูกเพิ่มเรียบร้อยแล้ว", "success");
           setIsModalOpen(false);
-          setNewEmployee({ title: "", name: "", surname: "", employeeId: "", password: "", position: "", supervisorId: ""});
+          setNewEmployee({ title: "", name: "", surname: "", employeeId: "", password: "", position: "", supervisorId: "" });
         })
         .catch((err: AxiosError) => { Swal.fire("Error", "Failed to add employee", "error"); });
     }
   };
 
+  const expandAllNodes = (nodes: TreeNode[]) => {
+    const keysToExpand: { [key: string]: boolean } = {};
+  
+    const collectKeys = (nodes: TreeNode[]) => {
+      nodes.forEach((node) => {
+        if (node.key) {keysToExpand[node.key] = true}
+        if (node.children && node.children.length > 0) {collectKeys(node.children)}
+      });
+    };
+    collectKeys(nodes);
+    setExpandedKeys(keysToExpand);
+  };
+  
+  const resetKeys = (nodes: TreeNode[], parentKey: string = ''): TreeNode[] => {
+    return nodes.map((node, index) => {
+      const newKey = parentKey ? `${parentKey}-${index}` : `${index}`;
+      const newNode: TreeNode = { ...node, key: newKey, children: node.children ? resetKeys(node.children, newKey) : [] };
+      return newNode;
+    });
+  };
+
+  const handleDragDrop = async (e: TreeDragDropEvent) => {
+    const updatedNodes = resetKeys(e.value);
+    expandAllNodes(updatedNodes);
+    setNodes(updatedNodes);
+    console.log('updatedNodes :>> ', updatedNodes);
+    // Make a request to the backend to update employee keys
+    try {
+      await axios.post("http://localhost:5000/updatekeyfromID", updatedNodes);
+      console.log('Employee keys updated successfully!');
+    } catch (err) {
+      console.error('Error updating employee keys:', err);
+    }
+  };
+  const customNodeTemplate = (node: TreeNode) => {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+        <span>{node.label}</span>
+        <button style={{ display: "none"}}
+          onClick={(e) => {e.stopPropagation();
+          if (node.key !== undefined) {handleDelete(Number(node.key));}}} 
+          className="bg-red-500 text-white px-2 py-1 rounded"
+        >
+          Delete
+        </button>
+      </div>
+    );
+  };
+  
   return (
     <div id="createEmployee" className="p-4 max-w-md mx-auto">
       <div style={{ display: "flex" }}>
@@ -132,19 +197,18 @@ export function CreateEmployee() {
         />
         <button onClick={() => setIsModalOpen(true)} style={{ width: "9rem", height: "fit-content" }}>เพิ่มพนักงาน</button>
       </div>
-
-
-
-      <ul className="space-y-2">
-        {employees.filter((emp) => emp.employee_fullname && emp.employee_fullname.toLowerCase().includes(searchQuery.toLowerCase())).map((employee) => (
-          <li key={employee.employee_id} className="p-2 bg-gray-100 rounded flex justify-between items-center">
-            <span>
-              <strong>{employee.employee_fullname}</strong> - {employee.employee_username}
-            </span>
-            <button onClick={() => handleDelete(employee.employee_id)} className="bg-red-500 text-white px-2 py-1 rounded"> Delete</button>
-          </li>
-        ))}
-      </ul>
+      <div id="Tree">
+        <Tree
+          ref={treeRef}
+          value={nodes}
+          expandedKeys={expandedKeys}
+          onToggle={(e) => setExpandedKeys(e.value)}
+          dragdropScope="demo"
+          onDragDrop={handleDragDrop}
+          className="body"
+          nodeTemplate={customNodeTemplate} 
+        />
+      </div>
 
       <Modal id="modal-create-employee" open={isModalOpen} onClose={() => setIsModalOpen(false)} aria-labelledby="modal-title">
         <Box
@@ -167,7 +231,7 @@ export function CreateEmployee() {
         >
           <Typography id="modal-title" variant="h6" sx={{ textAlign: "center" }}>กรอกข้อมูลพนักงาน</Typography>
 
-          <FormControl error={isSubmitted && !!errors.title} sx={{ mt: 2 }}>
+          {/* <FormControl error={isSubmitted && !!errors.title} sx={{ mt: 2 }}>
             <RadioGroup
               row
               value={newEmployee.title}
@@ -186,7 +250,7 @@ export function CreateEmployee() {
               <FormControlLabel value="นางสาว" control={<Radio />} label="นางสาว" />
             </RadioGroup>
             {isSubmitted && errors.title && <Typography color="error">{errors.title}</Typography>}
-          </FormControl>
+          </FormControl> */}
 
           <Box display="flex" justifyContent="center" gap={2} sx={{ mt: 2 }}>
             <TextField
@@ -224,7 +288,7 @@ export function CreateEmployee() {
               label="หัวหน้า"
             >
               {employees.map((employee) => (
-                <MenuItem key={employee.employee_id} value={employee.employee_id}>
+                <MenuItem key={employee.employee_id} value={employee.employee_key}>
                   {employee.employee_fullname}  {/* ใช้ employee_fullname แทน employee_name */}
                 </MenuItem>
               ))}
