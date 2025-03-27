@@ -4,8 +4,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #f4f4f4;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -24,9 +23,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
   min-height: 100vh;
 }
 
@@ -45,12 +41,18 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto
+button:focus-visible,
+input:focus-visible {
+  outline: unset;
+  outline-offset: unset;
+}
+input:-internal-autofill-selected {
+  background-color: transparent;
+  background: transparent;
 }
 
 @media (prefers-color-scheme: light) {

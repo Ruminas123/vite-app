@@ -9,7 +9,10 @@ import { Login } from "./pages/Login.tsx";
 import { Dashboard } from "./pages/Dashboard.tsx";
 import { CreateEmployee } from "./pages/CreateEmployee.tsx";
 import { CreatePosition } from "./pages/CreatePosition.tsx";
-import PrivateRoute from "./authen/PrivateRoute.tsx"; // Import the PrivateRoute component
+import { AwatForm } from "./pages/AwatForm.tsx";
+import { AwatTeamList } from "./pages/AwatTeamList.tsx";
+
+import PrivateRoute from "./authen/PrivateRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +60,22 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute redirectPath="/vite-app/login">
             <CreatePosition />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/vite-app/awat-form",
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <AwatForm />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/vite-app/awat-team-list",
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <AwatTeamList />
           </PrivateRoute>
         ),
       },

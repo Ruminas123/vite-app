@@ -39,7 +39,7 @@ app.post("/login", (req, res) => {
   );
 });
 
-app.get("/employees", (req, res) => {
+app.get("/getEmployees", (req, res) => {
   db.query("SELECT * FROM employees", (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -47,6 +47,20 @@ app.get("/employees", (req, res) => {
     res.json(result);
   });
 });
+
+app.get("/getHenchman/:employee_key", (req, res) => {
+  const employee_key = req.params.employee_key;
+  const query = "SELECT * FROM employees WHERE employee_key LIKE ? AND employee_key != ?";
+  const values = [`${employee_key}-%`, employee_key];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(result);
+  });
+});
+
 
 app.get("/positions", (req, res) => {
   db.query("SELECT * FROM positions", (err, result) => {
@@ -100,27 +114,84 @@ app.post("/createEmployee", (req, res) => {
 
 app.post("/createPosition", (req, res) => {
   const { name, status = true } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: "Position name is required" });
+  }
 
-  // if (!name) {
-  //   return res.status(400).json({ error: "Position name is required" });
-  // }
+  db.query("SELECT * FROM positions WHERE position_name = ?", [name], (err, results) => {
+    if (err) { return res.status(500).send(err); }
 
-  // db.query("SELECT * FROM positions WHERE position_name = ?", [name], (err, results) => {
-  //   if (err) { return res.status(500).send(err); }
+    if (results.length > 0) {
+      return res.status(400).json({ error: "Position name already exists" });
+    }
 
-  //   if (results.length > 0) {
-  //     return res.status(400).json({ error: "Position name already exists" });
-  //   }
-
-  //   db.query("INSERT INTO positions (position_name, position_status) VALUES (?, ?)",
-  //     [name, status], (err, result) => {
-  //       if (err) {
-  //         return res.status(500).send(err);
-  //       }
-  //       res.json({ position_id: result.insertId, position_name: name, position_status: status });
-  //     });
-  // });
+    db.query("INSERT INTO positions (position_name, position_status) VALUES (?, ?)",
+      [name, status], (err, result) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        res.json({ position_id: result.insertId, position_name: name, position_status: status });
+      });
+  });
 });
+
+app.get("/getAwat/:employee_id", (req, res) => {
+  const { employee_id } = req.params;
+  
+  const query = `SELECT * FROM awats WHERE employee_id = ? AND MONTH(awat_date) = MONTH(CURRENT_DATE) AND YEAR(awat_date) = YEAR(CURRENT_DATE) LIMIT 1`;
+  
+  db.query(query, [employee_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching data:", err);
+      return res.status(500).json({ message: "Error fetching data" });
+    }
+    if (results.length > 0) {
+      res.status(200).json(results[0]);
+    } else {
+      res.status(200).json(false);
+    }
+  });
+});
+
+app.post("/createAwat", (req, res) => {
+  const {field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, employee_id} = req.body;
+  
+  if (!employee_id) { return res.status(400).json({ message: "employee_id is required" })}
+
+  const insertQuery = `INSERT INTO awats (awat_one, awat_two, awat_three, awat_four, awat_five, awat_six, awat_seven, awat_eight, awat_nine, awat_ten, employee_id, awat_date, awat_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(insertQuery, [field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, employee_id, new Date(), 1], (err, result) => {
+    if (err) {
+      console.error("Error inserting data:", err);
+      res.status(500).json({ message: "Error inserting data" });
+    } else {
+      res.status(200).json({ message: "Data inserted successfully", values: req.body });
+    }
+  });
+});
+
+app.put("/updateAwat", (req, res) => {
+  const { employee_id, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10 } = req.body;
+
+  const query = `
+      UPDATE awats
+      SET awat_one = ?, awat_two = ?, awat_three = ?, awat_four = ?, awat_five = ?, 
+          awat_six = ?, awat_seven = ?, awat_eight = ?, awat_nine = ?, awat_ten = ?
+      WHERE employee_id = ? 
+      AND MONTH(awat_date) = MONTH(CURRENT_DATE) 
+      AND YEAR(awat_date) = YEAR(CURRENT_DATE)
+  `;
+  
+  db.query(query, [field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, employee_id], (err, results) => {
+      if (err) {
+          console.error("Error updating data:", err);
+          return res.status(500).json({ message: "Error updating data" });
+      }
+      res.status(200).json({ message: "Data updated successfully" });
+  });
+});
+
+
 
 app.delete("/deleteEmployee/:id", (req, res) => {
   const { id } = req.params;

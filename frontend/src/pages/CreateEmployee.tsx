@@ -5,7 +5,6 @@ import { Box, Button, Typography, Modal, FormControl, RadioGroup, FormControlLab
 import { Tree, TreeDragDropEvent } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import { NodeService } from '../service/NodeService.tsx';
-
 import Swal from 'sweetalert2';
 
 interface Employee {
@@ -35,7 +34,7 @@ export function CreateEmployee() {
   const treeRef = useRef<any>(null);
 
   const get_employee = () => {
-    axios.get("http://localhost:5000/employees")
+    axios.get("http://localhost:5000/getEmployees")
       .then((response: AxiosResponse<Employee[]>) => {
         setEmployees(response.data);
         NodeService.getTreeNodes(response.data).then((data) => {
@@ -138,17 +137,17 @@ export function CreateEmployee() {
 
   const expandAllNodes = (nodes: TreeNode[]) => {
     const keysToExpand: { [key: string]: boolean } = {};
-  
+
     const collectKeys = (nodes: TreeNode[]) => {
       nodes.forEach((node) => {
-        if (node.key) {keysToExpand[node.key] = true}
-        if (node.children && node.children.length > 0) {collectKeys(node.children)}
+        if (node.key) { keysToExpand[node.key] = true }
+        if (node.children && node.children.length > 0) { collectKeys(node.children) }
       });
     };
     collectKeys(nodes);
     setExpandedKeys(keysToExpand);
   };
-  
+
   const resetKeys = (nodes: TreeNode[], parentKey: string = ''): TreeNode[] => {
     return nodes.map((node, index) => {
       const newKey = parentKey ? `${parentKey}-${index}` : `${index}`;
@@ -174,9 +173,11 @@ export function CreateEmployee() {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
         <span>{node.label}</span>
-        <button style={{ display: "none"}}
-          onClick={(e) => {e.stopPropagation();
-          if (node.key !== undefined) {handleDelete(Number(node.key));}}} 
+        <button style={{ display: "none" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (node.key !== undefined) { handleDelete(Number(node.key)); }
+          }}
           className="bg-red-500 text-white px-2 py-1 rounded"
         >
           Delete
@@ -184,20 +185,24 @@ export function CreateEmployee() {
       </div>
     );
   };
-  
+
   return (
     <div id="createEmployee" className="p-4 max-w-md mx-auto">
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop:"1rem" }}>
         <input
           type="text"
           placeholder="Search by name..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 border rounded mb-3"
+          className="p-2 border rounded mb-3"
+          style={{ flexGrow: 1 }} // Makes input take up remaining space
         />
-        <button onClick={() => setIsModalOpen(true)} style={{ width: "9rem", height: "fit-content" }}>เพิ่มพนักงาน</button>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="col-auto"
+          style={{ width: "9rem" }}>เพิ่มพนักงาน</button>
       </div>
-      <div id="Tree">
+      <div id="Tree" style={{ marginTop: "1rem" }}>
         <Tree
           ref={treeRef}
           value={nodes}
@@ -206,7 +211,7 @@ export function CreateEmployee() {
           dragdropScope="demo"
           onDragDrop={handleDragDrop}
           className="body"
-          nodeTemplate={customNodeTemplate} 
+          nodeTemplate={customNodeTemplate}
         />
       </div>
 

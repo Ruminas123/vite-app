@@ -1,11 +1,6 @@
-// Container styling
-#createEmployee.container {
-    max-width: 1200px;
+#createEmployee{
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #f7f8fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #createEmployee,
@@ -18,7 +13,6 @@
     text-align: center;
 }
 
-// Header styling
 #createEmployee h2 {
     font-size: 2rem;
     text-align: center;
@@ -26,11 +20,9 @@
     margin-bottom: 20px;
 }
 
-// Input styles
 #createEmployee input {
     width: 100%;
     padding: 12px;
-    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
@@ -42,7 +34,6 @@
     outline: none;
 }
 
-// Button styling
 #createEmployee button {
     background-color: #3498db;
     color: white;
@@ -52,7 +43,6 @@
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 10px;
 }
 
 #createEmployee button:focus, #createEmployee button:focus-visible{
@@ -87,7 +77,6 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-// Card Image Styling
 #createEmployee .card-image {
     width: 100%;
     height: 250px;
@@ -96,7 +85,6 @@
     margin-bottom: 15px;
 }
 
-// Card Title Styling
 #createEmployee .card-title {
     font-size: 1.2rem;
     font-weight: bold;
@@ -175,6 +163,10 @@
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     display: flex;
     align-items: baseline;
+}
+
+#createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content:focus-visible{
+    outline: unset;
 }
 
 #createEmployee #Tree .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-dragover{

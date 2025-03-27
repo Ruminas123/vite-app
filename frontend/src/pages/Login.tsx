@@ -1,6 +1,5 @@
-import { LockOutlined } from "@mui/icons-material";
 import { Container, CssBaseline, Box, Typography, TextField, Button } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -19,8 +18,9 @@ export function Login() {
         username,
         password,
       });
-  
-      if (response.data.success) {
+      if (response.data.user.employee_status == 0) {
+        Swal.fire("ผิดพลาด!", "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error");
+      }else if (response.data.success) {
         const userData = response.data.user;
         login(userData); // ส่งข้อมูล user เข้า Context
         navigate("/vite-app/");
@@ -36,7 +36,15 @@ export function Login() {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container
+      maxWidth="sm"
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "calc(100vh - 128px)",  // Using calc to subtract 64px from 100vh
+      }}
+    >
       <CssBaseline />
       <Box
         sx={{
@@ -74,8 +82,8 @@ export function Login() {
           <Button
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
             onClick={handleLogin}
+            sx={{ mt: "1rem", height: "3rem" }}  // Adds margin-top of 1rem
           >
             Login
           </Button>
