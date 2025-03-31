@@ -1,0 +1,53 @@
+
+#awatStatistics{
+    max-width: 940px;
+    color: #000000;
+    position: relative;
+    margin: auto;
+    height: calc(100vh - 64px);
+    padding: 2rem 0;
+    width: 100%;
+  }
+
+#awatStatistics{
+    color: #000000;
+}
+
+#awatStatistics .table-container {
+    overflow-x: auto;
+}
+
+#awatStatistics table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 1rem;
+}
+
+#awatStatistics td:nth-child(1) {
+    text-align: left;
+  } 
+
+#awatStatistics th, #awatStatistics td {
+    border: 1px solid #a9a9a9;
+    padding: 8px;
+    text-align: center;
+}
+
+#awatStatistics th {
+    background-color: #ddd;
+}
+
+#awatStatistics .css-ovbmre-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root{
+    width: 10%;
+    font-family: 'Maehongson'!important;
+}
+
+#awatStatistics .css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
+    padding: 0.5rem 1rem;
+}
+
+#awatStatistics .action{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "../authen/AuthContext.tsx";
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import "./../css/awatForm.scss";
 
@@ -16,14 +17,18 @@ type FormValues = {
     field8: string;
     field9: string;
     field10: string;
-    employee_id?: number;
+    manager_id?: number;
+    henchman_id?: number;
 };
 
-export function AwatForm() {
+export function AwatManagerForm() {
     const { user } = useAuth();
+    const [userTeam, setUserTeam] = useState<any>(null);
+    const { henchman_id } = useParams<{ henchman_id: string }>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [hasExistingData, setHasExistingData] = useState(false);
-
+    const [originalValues, setOriginalValues] = useState<FormValues | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formValues, setFormValues] = useState<FormValues>({
         field1: '',
         field2: '',
@@ -37,9 +42,6 @@ export function AwatForm() {
         field10: ''
     });
 
-    const [originalValues, setOriginalValues] = useState<FormValues | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
     const months = [
         'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
         'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
@@ -50,16 +52,16 @@ export function AwatForm() {
     const currentYear = currentDate.getFullYear() + 543;
 
     const thaiLabels = [
-        '1. ประสิทธิภาพในการปฏิบัติงานที่ได้รับมอบ',
-        '2. การจัดการ และการวางแผนงาน',
-        '3. การสังเกตและ การบริหารเวลา',
-        '4. ประหยัดน่าใช้จ่าย เช่น ค่าอาหาร ค่าเดินทาง',
-        '5. การเรียนรู้การใช้เทคโนโลยีในการทำงาน',
-        '6. ภาวะความกดดันในการทำงาน สิ่งเฉลียว',
-        '7. เครื่องมือ ของอุปกรณ์ความถนัดในการทำงาน',
-        '8. การเพิ่มมูลฐานองค์กรทั่งที่เกี่ยวข้อง',
-        '9. ความสุขหรือสนุก ในการทำงาน',
-        '10. ความพึงพอใจในการร่วมโครงการ AWAT'
+        '1. งานแล้วเสร็จตามคาดหวัง',
+        '2. ริมาณผลงานที่สามารถปฏิบัติได้',
+        '3. คุณภาพของงานที่ปฏิบัติได้',
+        '4. มีการวางแผนอย่างเป็นระบบ',
+        '5. ความรับผิดชอบต่อหน้าที่ที่ได้รับมอบหมาย',
+        '6. การเรียนรู้การใช้เทคโนโลยีในการทำงาน',
+        '7. การประสานงานและการให้ความร่วมมือ',
+        '8. ความสามารถในการตัดสินใจต่อปัญหา',
+        '9. ความสามารถในการติดต่อสื่อสาร',
+        '10. ประสิทธิภาพในการทำงานของบุคลากร'
     ];
 
     useEffect(() => {
@@ -70,21 +72,22 @@ export function AwatForm() {
     }, [formValues]);
 
     useEffect(() => {
-        if (user?.employee_id) {
-            axios.get(`http://localhost:5000/getAwatMonth/${user.employee_id}`)
+        if (user?.employee_id && henchman_id) {
+            axios.get(`http://localhost:5000/getAwatManager/${user.employee_id}/${henchman_id}`)
                 .then((response: AxiosResponse) => {
-                    if (response.data) {
+                    console.log('response.data :>> ', response.data.data);
+                    if (response.data?.status) {
                         const fetchedValues = {
-                            field1: response.data.awat_one ?? '',
-                            field2: response.data.awat_two ?? '',
-                            field3: response.data.awat_three ?? '',
-                            field4: response.data.awat_four ?? '',
-                            field5: response.data.awat_five ?? '',
-                            field6: response.data.awat_six ?? '',
-                            field7: response.data.awat_seven ?? '',
-                            field8: response.data.awat_eight ?? '',
-                            field9: response.data.awat_nine ?? '',
-                            field10: response.data.awat_ten ?? ''
+                            field1: response.data.data.awat_one ?? '',
+                            field2: response.data.data.awat_two ?? '',
+                            field3: response.data.data.awat_three ?? '',
+                            field4: response.data.data.awat_four ?? '',
+                            field5: response.data.data.awat_five ?? '',
+                            field6: response.data.data.awat_six ?? '',
+                            field7: response.data.data.awat_seven ?? '',
+                            field8: response.data.data.awat_eight ?? '',
+                            field9: response.data.data.awat_nine ?? '',
+                            field10: response.data.data.awat_ten ?? ''
                         };
                         setFormValues(fetchedValues);
                         setOriginalValues(fetchedValues);
@@ -101,14 +104,13 @@ export function AwatForm() {
 
     const handleChange = (field: keyof FormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = e.target.value;
-        if (value !== '' && !isNaN(Number(value))) {value = String(parseInt(value, 10))}
-        if (value === '' || (Number(value) >= 0 && Number(value) <= 10)) {setFormValues(prev => ({...prev, [field]: value}))}
+        if (value !== '' && !isNaN(Number(value))) { value = String(parseInt(value, 10)) }
+        if (value === '' || (Number(value) >= 0 && Number(value) <= 10)) { setFormValues(prev => ({ ...prev, [field]: value })) }
     };
-    
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+
         Swal.fire({
             title: "ยืนยันการส่งแบบประเมิน?",
             text: hasExistingData ? "คุณต้องการแก้ไขข้อมูลแบบประเมินนี้ใช่หรือไม่?" : "คุณต้องการส่งแบบประเมินนี้ใช่หรือไม่?",
@@ -121,14 +123,15 @@ export function AwatForm() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 setIsSubmitting(true);
-                formValues.employee_id = user?.employee_id;
-    
+                formValues.manager_id = Number(user?.employee_id);
+                formValues.henchman_id = Number(henchman_id);
+
                 try {
                     if (hasExistingData) {
-                        await axios.put("http://localhost:5000/updateAwat", formValues);
+                        await axios.put("http://localhost:5000/updateAwatManager", formValues);
                         Swal.fire("สำเร็จ!", "อัปเดตข้อมูลแบบประเมินเรียบร้อยแล้ว", "success");
                     } else {
-                        await axios.post("http://localhost:5000/createAwat", formValues);
+                        await axios.post("http://localhost:5000/createAwatManager", formValues);
                         Swal.fire("สำเร็จ!", "ตอบแบบประเมินเรียบร้อยแล้ว", "success");
                         setHasExistingData(true);
                     }
@@ -142,10 +145,8 @@ export function AwatForm() {
             }
         });
     };
-    
-
     return (
-        <div id="awatForm">
+        <div id="awatTeamForm">
             <h2 className="txt-topic" style={{ marginBottom: "2rem" }}>
                 แบบประเมินความพึงพอใจ {user?.employee_fullname} เดือน {months[currentMonth]} {currentYear}
             </h2>
@@ -183,4 +184,4 @@ export function AwatForm() {
     );
 }
 
-export default AwatForm;
+export default AwatManagerForm;

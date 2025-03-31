@@ -48,9 +48,29 @@ app.get("/getEmployees", (req, res) => {
   });
 });
 
+app.get("/getEmployees/:employee_id", (req, res) => {
+  const { employee_id } = req.params;
+  if (isNaN(employee_id)) {
+    return res.status(400).json({ error: "Invalid employee_id" });
+  }
+  db.query("SELECT * FROM employees WHERE employee_id = ?", [employee_id], (err, result) => {
+    if (err)  {return res.status(500).json({ error: err.message }) }
+    if (result.length === 0) { return res.status(404).json({ error: "Employee not found" }) }
+    res.json(result[0]);
+  });
+});
+
 app.get("/getHenchman/:employee_key", (req, res) => {
   const employee_key = req.params.employee_key;
-  const query = "SELECT * FROM employees WHERE employee_key LIKE ? AND employee_key != ?";
+  const query = `
+    SELECT e.employee_id, e.employee_permission_id, e.employee_department_id, e.employee_position_id,
+          e.employee_key, e.employee_fullname, e.employee_username, e.employee_status, e.employee_date,
+          IF(MONTH(a.awat_date) = MONTH(CURDATE()) AND e.employee_id = a.employee_id, TRUE, FALSE) AS awat_month_status
+    FROM employees e
+    LEFT JOIN awats a ON e.employee_id = a.employee_id
+    WHERE e.employee_key LIKE ? AND e.employee_key != ?
+    ORDER BY e.employee_id ASC
+  `;
   const values = [`${employee_key}-%`, employee_key];
 
   db.query(query, values, (err, result) => {
@@ -60,7 +80,6 @@ app.get("/getHenchman/:employee_key", (req, res) => {
     res.json(result);
   });
 });
-
 
 app.get("/positions", (req, res) => {
   db.query("SELECT * FROM positions", (err, result) => {
@@ -137,9 +156,23 @@ app.post("/createPosition", (req, res) => {
 
 app.get("/getAwat/:employee_id", (req, res) => {
   const { employee_id } = req.params;
-  
+  const query = `SELECT * FROM awats WHERE employee_id = ? ORDER BY YEAR(awat_date) ASC, MONTH(awat_date) ASC`;
+  db.query(query, [employee_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching data:", err);
+      return res.status(500).json({ message: "Error fetching data" });
+    }
+    if (results.length > 0) {
+      res.status(200).json(results);
+    } else {
+      res.status(200).json(false);
+    }
+  });
+});
+
+app.get("/getAwatMonth/:employee_id", (req, res) => {
+  const { employee_id } = req.params;
   const query = `SELECT * FROM awats WHERE employee_id = ? AND MONTH(awat_date) = MONTH(CURRENT_DATE) AND YEAR(awat_date) = YEAR(CURRENT_DATE) LIMIT 1`;
-  
   db.query(query, [employee_id], (err, results) => {
     if (err) {
       console.error("Error fetching data:", err);
@@ -153,10 +186,32 @@ app.get("/getAwat/:employee_id", (req, res) => {
   });
 });
 
+
+
+app.get("/getAwatManager/:manager_id/:henchman_id", (req, res) => {
+  const { manager_id, henchman_id } = req.params;
+
+  const query = `SELECT * FROM awats_manager WHERE manager_id = ? AND henchman_id = ? 
+    AND MONTH(awat_date) = MONTH(CURRENT_DATE) AND YEAR(awat_date) = YEAR(CURRENT_DATE) LIMIT 1`;
+
+  db.query(query, [manager_id, henchman_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching data:", err);
+      return res.status(500).json({ status: 500, message: "Error fetching data" });
+    }
+
+    if (results.length > 0) {
+      res.status(200).json({ status: 1, data: results[0] });
+    } else {
+      res.status(200).json({ status: 0, message: "No data found" });
+    }
+  });
+});
+
 app.post("/createAwat", (req, res) => {
-  const {field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, employee_id} = req.body;
-  
-  if (!employee_id) { return res.status(400).json({ message: "employee_id is required" })}
+  const { field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, employee_id } = req.body;
+
+  if (!employee_id) { return res.status(400).json({ message: "employee_id is required" }) }
 
   const insertQuery = `INSERT INTO awats (awat_one, awat_two, awat_three, awat_four, awat_five, awat_six, awat_seven, awat_eight, awat_nine, awat_ten, employee_id, awat_date, awat_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
@@ -181,17 +236,56 @@ app.put("/updateAwat", (req, res) => {
       AND MONTH(awat_date) = MONTH(CURRENT_DATE) 
       AND YEAR(awat_date) = YEAR(CURRENT_DATE)
   `;
-  
+
   db.query(query, [field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, employee_id], (err, results) => {
-      if (err) {
-          console.error("Error updating data:", err);
-          return res.status(500).json({ message: "Error updating data" });
-      }
-      res.status(200).json({ message: "Data updated successfully" });
+    if (err) {
+      console.error("Error updating data:", err);
+      return res.status(500).json({ message: "Error updating data" });
+    }
+    res.status(200).json({ message: "Data updated successfully" });
   });
 });
 
+app.post("/createAwatManager", (req, res) => {
+  const { field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, manager_id, henchman_id } = req.body;
+  if ((!manager_id) && (!henchman_id)) { return res.status(400).json({ message: "employee_id is required" }) }
+  const insertQuery = `INSERT INTO awats_manager (awat_one, awat_two, awat_three, awat_four, awat_five, awat_six, awat_seven, awat_eight, awat_nine, awat_ten, manager_id, henchman_id, awat_date, awat_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  db.query(insertQuery, [field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, manager_id, henchman_id, new Date(), 1], (err, result) => {
+    if (err) {
+      console.error("Error inserting data:", err);
+      res.status(500).json({ message: "Error inserting data" });
+    } else {
+      res.status(200).json({ message: "Data inserted successfully", values: req.body });
+    }
+  });
+})
 
+app.put("/updateAwatManager", (req, res) => {
+  const { manager_id, henchman_id, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10 } = req.body;
+  if (!manager_id || !henchman_id) { return res.status(400).json({ message: "manager_id and henchman_id are required" })}
+  const query = `
+      UPDATE awats_manager
+      SET awat_one = ?, awat_two = ?, awat_three = ?, awat_four = ?, awat_five = ?, 
+          awat_six = ?, awat_seven = ?, awat_eight = ?, awat_nine = ?, awat_ten = ?
+      WHERE manager_id = ? 
+      AND henchman_id = ?
+      AND MONTH(awat_date) = MONTH(CURRENT_DATE) 
+      AND YEAR(awat_date) = YEAR(CURRENT_DATE)
+  `;
+
+  db.query(query, [field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, manager_id, henchman_id], (err, results) => {
+    if (err) {
+      console.error("Error updating data:", err);
+      return res.status(500).json({ message: "Error updating data" });
+    }
+    
+    if (results.affectedRows > 0) {
+      res.status(200).json({ message: "Data updated successfully" });
+    } else {
+      res.status(404).json({ message: "No matching record found to update" });
+    }
+  });
+});
 
 app.delete("/deleteEmployee/:id", (req, res) => {
   const { id } = req.params;
@@ -236,9 +330,9 @@ app.post("/updatekeyfromID", async (req, res) => {
       const updatedKey = employee.key;  // Use the 'key' provided in the request body
       const query = 'UPDATE employees SET employee_key = ? WHERE employee_id = ?';
       db.query(query, [updatedKey, employee.id], (err, results) => {
-        if (err) {return err;}
+        if (err) { return err; }
       });
-      if (employee.children && employee.children.length > 0) {loopEmployees(employee.children)}
+      if (employee.children && employee.children.length > 0) { loopEmployees(employee.children) }
     });
   }
 

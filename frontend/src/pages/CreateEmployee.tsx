@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import './../css/createEmployee.scss';
-import { Box, Button, Typography, Modal, FormControl, RadioGroup, FormControlLabel, Radio, TextField, Select, MenuItem, InputLabel, Autocomplete } from "@mui/material";
+import { Box, Button, Typography, Modal, FormControl, TextField, Select, MenuItem, InputLabel, Autocomplete } from "@mui/material";
 import { Tree, TreeDragDropEvent } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import { NodeService } from '../service/NodeService.tsx';
@@ -37,7 +37,7 @@ export function CreateEmployee() {
     axios.get("http://localhost:5000/getEmployees")
       .then((response: AxiosResponse<Employee[]>) => {
         setEmployees(response.data);
-        NodeService.getTreeNodes(response.data).then((data) => {
+        NodeService.getTreeNodes(response.data.filter(emp => emp.employee_id !== (JSON.parse(localStorage.getItem("user") || "{}")?.employee_id))).then((data) => {
           setNodes(data);
           expandAllNodes(data);
         });
@@ -54,7 +54,7 @@ export function CreateEmployee() {
   };
   const del_position = (id: number) => {
     axios
-      .delete(`http://localhost:5000/deleteEmployee/${id}`) // Call correct delete endpoint
+      .delete(`http://localhost:5000/deleteEmployee/${id}`)
       .then(() => {
         setEmployees((prevEmployees) => prevEmployees.filter((employee) => employee.employee_id !== id));
         Swal.fire("ลบแล้ว!", "พนักงานถูกลบออกจากระบบ", "success");

@@ -11,19 +11,19 @@ const Navbar: React.FC = () => {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
           <Link to="/vite-app/">
-            <span style={{ color: '#408DFF', marginRight: '5px', fontWeight: 'bold' }}>AWAT</span>
-            <span style={{ color: '#FFFFFF', fontWeight: 'bold' }}>FORM</span>
+            <span style={{ color: '#408DFF', marginRight: '5px', fontWeight: 'bold', fontSize: "1.5rem", fontFamily: 'Maehongson' }}>AWAT</span>
+            <span style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: "1.5rem", fontFamily: 'Maehongson' }}>FORM</span>
           </Link>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {isAuthenticated ? (
             <>
-              <Typography variant="h6" sx={{ color: 'white', marginRight: 2, fontSize: "1rem" }}>
+              <Typography variant="h6" sx={{ color: 'white', marginRight: 2, fontSize: "1.2rem", fontFamily: 'Maehongson' }}>
                 {user?.employee_fullname}
               </Typography>
-              <Button color="inherit" component={Link} to="/vite-app/">Home</Button>
-              <Button color="inherit" component={Link} to="/vite-app/contact">Contact</Button>
-              <Button color="inherit" onClick={logout} sx={{ '&:hover': { color: '#535bf2' } }}>Logout</Button>
+              <Button color="inherit" component={Link} to="/vite-app/" sx={{ fontFamily: 'Maehongson', fontSize: "1.2rem" }}>Home</Button>
+              <Button color="inherit" component={Link} to="/vite-app/contact"  sx={{ fontFamily: 'Maehongson', fontSize: "1.2rem" }}>Contact</Button>
+              <Button color="inherit" onClick={logout} sx={{ '&:hover': { color: '#535bf2' }, fontFamily: 'Maehongson', fontSize: "1.2rem" }}>Logout</Button>
             </>
           ) : (<Button color="inherit" component={Link} to="/vite-app/login">Login</Button>)}
         </Box>

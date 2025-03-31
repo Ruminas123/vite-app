@@ -8,7 +8,6 @@ import { useAuth } from "../authen/AuthContext.tsx";
 
 export function Home() {
     const { user, henchman  } = useAuth();
-    console.log('henchman :>> ', henchman);
     const Admin = user?.employee_status === 2;
     const Employee = user?.employee_status === 1;
 

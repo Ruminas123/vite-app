@@ -7,3 +7,47 @@
   height: calc(100vh - 64px);
   padding: 2rem 0;
 }
+
+#awatTeamList .henchman-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #ccc;
+}
+
+#awatTeamList .henchman-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+#awatTeamList .henchman-name {
+  flex-grow: 1;
+  font-size: 1.2rem;
+}
+
+#awatTeamList .henchman-actions,
+#awatTeamList .henchman-actions a{
+  display: flex;
+}
+#awatTeamList .henchman-actions a{
+  margin-left: 10px;
+}
+#awatTeamList .henchman-actions button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  vertical-align: super;
+}
+
+#awatTeamList .henchman-actions button:hover {
+  background-color: #0056b3;
+}
+
+#awatTeamList .henchman-actions button:disabled{
+  background-color: #ccc;
+  cursor: default;
+}

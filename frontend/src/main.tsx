@@ -2,6 +2,7 @@ import ReactDOM from "react-dom/client";
 import React from 'react';  // เพิ่มการ import React
 import App from "./App.tsx";
 import "./index.css";
+import PrivateRoute from "./authen/PrivateRoute.tsx";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Home } from "./pages/Home.tsx";
 import { Contact } from "./pages/Contact.tsx";
@@ -11,8 +12,9 @@ import { CreateEmployee } from "./pages/CreateEmployee.tsx";
 import { CreatePosition } from "./pages/CreatePosition.tsx";
 import { AwatForm } from "./pages/AwatForm.tsx";
 import { AwatTeamList } from "./pages/AwatTeamList.tsx";
-
-import PrivateRoute from "./authen/PrivateRoute.tsx";
+import { AwatTeamForm } from "./pages/AwatTeamForm.tsx";
+import { AwatManagerForm } from "./pages/AwatManagerForm.tsx";
+import { AwatStatistics } from "./pages/AwatStatistics.tsx";
 
 const router = createBrowserRouter([
   {
@@ -76,6 +78,30 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute redirectPath="/vite-app/login">
             <AwatTeamList />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/vite-app/awat-team-form/:employee_id",
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <AwatTeamForm />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/vite-app/awat-manager-form/:henchman_id",
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <AwatManagerForm />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/vite-app/awat-statistics",
+        element: (
+          <PrivateRoute redirectPath="/vite-app/login">
+            <AwatStatistics />
           </PrivateRoute>
         ),
       },
