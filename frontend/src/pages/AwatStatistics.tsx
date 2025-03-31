@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { Select, MenuItem } from "@mui/material";
-
+import { generatePDF } from "../service/pdf.tsx";
 import './../css/awatStatistics.scss';
 
 export function AwatStatistics() {
@@ -57,7 +57,7 @@ export function AwatStatistics() {
             <h2 className="txt-topic" style={{ marginBottom: "2rem", textAlign: "center" }}>รายงานสถิติแบบประเมินความพึงพอใจ</h2>
 
             <div className='action'>
-            <button style={{ marginRight: "0.5rem" }}>PDF</button>
+            <button onClick={generatePDF} style={{ marginRight: "0.5rem" }}>PDF</button>
             <Select
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(Number(e.target.value))}
