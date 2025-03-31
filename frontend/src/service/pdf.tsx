@@ -1,5 +1,7 @@
 import { jsPDF } from "jspdf";
 
+// COMMIT 2
+
 // ฟังก์ชันสร้าง PDF
 export const generatePDF = async () => {
     // สร้าง PDF
@@ -7,7 +9,7 @@ export const generatePDF = async () => {
     
     // เพิ่มฟอนต์ไทย
     doc.addFont("src/assets/Maehongson.ttf", "Maehongson", "normal");
-    
+
     // ตั้งค่าฟอนต์ไทย
     doc.setFont("Maehongson");
     
